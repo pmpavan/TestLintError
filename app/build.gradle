@@ -1,0 +1,90 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id "dagger.hilt.android.plugin"
+    id 'net.ltgt.errorprone'
+    id 'net.ltgt.nullaway'
+}
+
+android {
+
+    compileSdk 31
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file('../debug.keystore')
+            storePassword 'android'
+        }
+        release {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file('../debug.keystore')
+            storePassword 'android'
+        }
+    }
+    defaultConfig {
+        applicationId "com.example.testlinterror"
+        minSdk 21
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        quiet false // set to true to turn off analysis progress reporting by lint
+        abortOnError true
+        ignoreWarnings false
+        checkReleaseBuilds true
+        checkGeneratedSources = true
+        ignoreTestSources true
+        fatal 'StopShip'
+        lintConfig file('../lint.xml')
+        baseline file("lint-baseline.xml")
+        xmlOutput file("build/reports/lint/lint-results-release.xml")
+        htmlOutput file("build/reports/lint/lint-results-release.html")
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+
+    hilt {
+//        enableExperimentalClasspathAggregation = true
+        enableAggregatingTask = true
+    }
+    dynamicFeatures = [':feature:dynamicfeature']
+    kapt {
+        correctErrorTypes = true
+    }
+}
+
+dependencies {
+    implementation "com.google.dagger:hilt-android:2.41"
+    kapt "com.google.dagger:hilt-android-compiler:2.41"
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    errorprone "com.google.errorprone:error_prone_core:2.3.3"
+    errorprone "com.uber.nullaway:nullaway:0.7.9"
+    errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
+
+}
